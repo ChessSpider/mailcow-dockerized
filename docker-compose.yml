@@ -242,28 +242,22 @@ services:
       depends_on:
         - sogo-mailcow
         - php-fpm-mailcow
-      image: nginx:mainline-alpine
+      build: ./data/Dockerfiles/nginx
       healthcheck:
         test: ["CMD", "ping", "php-fpm-mailcow", "-c", "5"]
         interval: 5s
         timeout: 5s
         retries: 10
-      command: /bin/sh -c "envsubst < /etc/nginx/conf.d/templates/listen_plain.template > /etc/nginx/conf.d/listen_plain.active &&
-        envsubst < /etc/nginx/conf.d/templates/listen_ssl.template > /etc/nginx/conf.d/listen_ssl.active &&
-        envsubst < /etc/nginx/conf.d/templates/server_name.template > /etc/nginx/conf.d/server_name.active &&
-        nginx -g 'daemon off;'"
       environment:
         - HTTPS_PORT=${HTTPS_PORT:-443}
         - HTTP_PORT=${HTTP_PORT:-80}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
       volumes:
-        - ./data/web:/web:ro
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
         - ./data/assets/ssl/:/etc/ssl/mail/:ro
-        - ./data/conf/nginx/:/etc/nginx/conf.d/:rw
       ports:
-        - "${HTTPS_BIND:-0.0.0.0}:${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
-        - "${HTTP_BIND:-0.0.0.0}:${HTTP_PORT:-80}:${HTTP_PORT:-80}"
+        - "${HTTPS_BIND:-0.0.0.0}:${HTTPS_PORT:-443}:443"
+        - "${HTTP_BIND:-0.0.0.0}:${HTTP_PORT:-80}:80"
       restart: always
       dns:
         - 172.22.1.254
