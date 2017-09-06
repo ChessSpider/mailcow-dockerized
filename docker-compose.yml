@@ -113,7 +113,6 @@ services:
       depends_on:
         - redis-mailcow
       volumes:
-        - ./data/web:/web:ro
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
         - dkim-vol-1:/data/dkim
       environment:

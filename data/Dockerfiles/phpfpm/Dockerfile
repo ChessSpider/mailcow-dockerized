@@ -21,7 +21,13 @@ RUN apk add -U --no-cache libxml2-dev \
 
 COPY ./docker-entrypoint.sh /
 
+COPY ./web /web
+RUN chown -R root:www-data /web
+RUN chmod -R 0640 /web
+
 EXPOSE 9000
+
+USER www-data
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["php-fpm"]
