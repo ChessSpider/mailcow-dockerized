@@ -93,7 +93,7 @@ services:
         - ./data/conf/rspamd/override.d/:/etc/rspamd/override.d:ro
         - ./data/conf/rspamd/local.d/:/etc/rspamd/local.d:ro
         - ./data/conf/rspamd/lua/:/etc/rspamd/lua/:ro
-        - dkim-vol-1:/data/dkim
+        - ./data/dkim:/data/dkim
         - rspamd-vol-1:/var/lib/rspamd
       restart: always
       dns:
@@ -114,7 +114,7 @@ services:
         - redis-mailcow
       volumes:
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
-        - dkim-vol-1:/data/dkim
+        - ./data/dkim:/data/dkim:rw
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -254,6 +254,7 @@ services:
       volumes:
         - ./data/conf/rspamd/dynmaps:/dynmaps:ro
         - ./data/assets/ssl/:/etc/ssl/mail/:ro
+        - aacme-vol-1:/var/www/.well-known/acme-challenge
       tmpfs:
 #        - /var/cache/nginx/:uid=100,rw,noexec,nosuid,size=5M
         - /var/run/:uid=100,rw,noexec,nosuid,size=512K
@@ -287,7 +288,8 @@ services:
         - SKIP_LETS_ENCRYPT=${SKIP_LETS_ENCRYPT:-n}
         - SKIP_IP_CHECK=${SKIP_IP_CHECK:-n}
       volumes:
-        - ./data/web/.well-known/acme-challenge:/var/www/acme:rw
+        - aacme-vol-1:/var/www/acme:rw
+#        - ./data/web/.well-known/acme-challenge:/var/www/acme:rw
         - ./data/assets/ssl:/var/lib/acme/:rw
         - ./data/assets/ssl-example:/var/lib/ssl-example/:ro
         - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -341,8 +343,8 @@ networks:
 volumes:
   vmail-vol-1:
   mysql-vol-1:
-  dkim-vol-1:
   redis-vol-1:
   rspamd-vol-1:
   postfix-vol-1:
   crypt-vol-1:
+  aacme-vol-1:
